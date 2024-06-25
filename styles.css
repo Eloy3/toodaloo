@@ -9,13 +9,6 @@
     scrollbar-width: none;
 }
 
-.icons{
-    padding-left: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
   .icons svg{
     width: 100px;
     fill: white;
@@ -23,6 +16,10 @@
 
   .icons .drag-over {
     fill: #ffc2d1;
+  }
+
+  #archive-icon{
+    fill: white;
   }
 
 *::webkit-scrollbar {
@@ -80,13 +77,16 @@
 .lanes{
     display: flex;
     align-items: flex-start;
-    justify-content: start;
+    justify-content: center;
     gap: 16px;
 
     padding: 24px 32px;
 
     overflow: scroll;
     height: 100%;
+
+    flex-wrap: wrap; /* Allow lanes to wrap */
+    max-width: 100%; /* Ensure lanes don't overflow the screen */
 }
 
 .heading {
@@ -115,6 +115,7 @@
 
     padding: 10px;
   }
+
   .swim-lane {
     display: flex;
     flex-direction: column;
@@ -131,11 +132,36 @@
     flex-shrink: 0;
   }
 
+  .icons{
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    flex-shrink: 0;
+    width: 120px;
+  }
+
   #todo-lane .heading{
     padding-left: 3%;
   }
   #doing-lane .heading{
     padding-left: 3%;
+  }
+  #archived-lane{
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+  
+    background: #1b263b;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
+  
+    padding: 12px;
+    border-radius: 4px;
+    width: 235px;
+    min-height: 120px;
+  
+    flex-shrink: 0;
   }
 
   .task {

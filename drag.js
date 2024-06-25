@@ -43,6 +43,7 @@ tasks.forEach((task) => {
     }
   });
 
+
   function insertAboveTask(zone, mouseY){
     const els = zone.querySelectorAll(".task:not(.is-dragging)");
 

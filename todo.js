@@ -34,24 +34,25 @@ document.getElementById('todo-form').addEventListener('submit', (e)=> {
     const archiveButton = document.getElementById("archive");
     const archiveIcon = document.getElementById("archive-icon");
     const todoLane = document.getElementById("done-lane");
-    const archiveBoard = document.getElementById("archive-board");
     const archivedLane = document.getElementById("archived-lane");
-
-    let archivedTasks = [];
 
     archiveButton.addEventListener("click", () => {
         // Move tasks to archive
         const tasks = todoLane.querySelectorAll(".task");
         tasks.forEach(task => {
-            archivedTasks.push(task.outerHTML); // Save task HTML to array
-            task.remove(); // Remove task from the "Toodaloo" lane
+            archivedLane.appendChild(task);
         });
     });
 
     archiveIcon.addEventListener("click", () => {
         // Display archived tasks
-        archivedLane.innerHTML = archivedTasks.join(""); // Load tasks into archived lane
-        archiveBoard.style.display = "block"; // Show the archive board
+        if (archivedLane.style.display === 'none') {
+            archivedLane.style.display = 'flex';
+            archiveIcon.style.fill = '#ffc2d1';
+        } else {
+            archivedLane.style.display = 'none';
+            archiveIcon.style.fill = 'white';
+        }
     });
 });
 

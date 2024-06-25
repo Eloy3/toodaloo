@@ -94,14 +94,18 @@
     font-weight: bold;
     margin-bottom: 8px;
   }
-  .row{
+
+  .my-row{
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items: center; /* Center align items vertically */
+    justify-content: space-between; /* Align items to the right */
+    gap: 10px; /* Optional: Add some space between the heading and the button */
   }
-  .row .heading{
-    margin: 0; /* Remove default margin */
-    padding: 10px;
+
+  .my-row button{
+    justify-content: right;
+    padding: 0px;
+    
   }
 
   #archive{
@@ -142,12 +146,10 @@
     width: 120px;
   }
 
-  #todo-lane .heading{
+  .heading{
     padding-left: 3%;
   }
-  #doing-lane .heading{
-    padding-left: 3%;
-  }
+
   #archived-lane{
     display: none;
     flex-direction: column;

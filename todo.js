@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const doingLane = document.getElementById("doing-lane");
   const archivedLane = document.getElementById("archived-lane");
 
+  // Explicitly set archivedLane display to none on page load
+  archivedLane.style.display = 'none';
+
   // Load tasks from localStorage
   loadTasks();
 
@@ -48,6 +51,20 @@ document.addEventListener("DOMContentLoaded", () => {
           archiveIcon.style.fill = 'white';
       }
   });
+
+  archiveIcon.addEventListener("mouseenter", (e) => {
+    // Display archived tasks
+    if (archivedLane.style.display === 'none') {
+      archiveIcon.style.fill = '#ffc2d1';
+    }
+  })
+
+  archiveIcon.addEventListener("mouseleave", () => {
+    // Display archived tasks
+    if (archivedLane.style.display === 'none') {
+      archiveIcon.style.fill = 'white';
+    }
+  })
 
   // Save tasks to localStorage
   function saveTasks() {

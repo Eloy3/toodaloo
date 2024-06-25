@@ -1,6 +1,7 @@
 const tasks = document.querySelectorAll(".task");
 const boards = document.querySelectorAll(".swim-lane");
 const trashIcon = document.querySelector(".icons .bi-trash");
+const bookIcon = document.querySelector(".icons .bi-book");
 
 tasks.forEach((task) => {
     task.addEventListener("dragstart", () => {
@@ -42,7 +43,6 @@ tasks.forEach((task) => {
       curTask.remove();
     }
   });
-
 
   function insertAboveTask(zone, mouseY){
     const els = zone.querySelectorAll(".task:not(.is-dragging)");

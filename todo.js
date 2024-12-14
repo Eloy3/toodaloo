@@ -14,12 +14,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const taskText = input.value;
+      const taskText = input.value.trim();
 
       if (!taskText) { return; }
 
+      // Sanitize input to prevent XSS
+      const sanitizedTaskText = taskText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
       // Create a new task element
-      const newTask = createTaskElement(taskText);
+      const newTask = createTaskElement(sanitizedTaskText);
 
       // Append the new task to the todo-lane
       todoLane.appendChild(newTask);
@@ -39,14 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   archiveIcon.addEventListener("click", () => {
-      // Display archived tasks
-      if (archivedLane.style.display === 'none') {
-          archivedLane.style.display = 'flex';
-          archiveIcon.style.fill = '#ffc2d1';
-      } else {
-          archivedLane.style.display = 'none';
-          archiveIcon.style.fill = 'white';
-      }
+    archivedLane.classList.toggle('visible');
+    archiveIcon.classList.toggle('active');
   });
 
   archiveIcon.addEventListener("mouseenter", (e) => {
@@ -71,118 +68,158 @@ document.addEventListener("DOMContentLoaded", () => {
         archived: []
     };
 
-    const saveLane = (lane, tasks) => {
-        lane.querySelectorAll(".task").forEach(task => {
-            const taskTitle = task.querySelector("p").innerText;
-            const taskDetails = task.querySelector(".task-details").innerText;
-            tasks.push({ title: taskTitle, details: taskDetails });
-        });
+    const laneElements = {
+        todo: todoLane,
+        done: doneLane,
+        doing: doingLane,
+        archived: archivedLane
     };
 
-    saveLane(todoLane, lanes.todo);
-    saveLane(doneLane, lanes.done);
-    saveLane(doingLane, lanes.doing);
-    saveLane(archivedLane, lanes.archived);
+    Object.keys(lanes).forEach(laneName => {
+        laneElements[laneName].querySelectorAll(".task").forEach(task => {
+            const taskTitle = task.querySelector("p").innerText;
+            const attributes = {};
+            task.querySelectorAll(".task-attribute").forEach(attr => {
+                const key = attr.querySelector("strong").innerText.replace(": ", "");
+                const valueElement = attr.querySelector("span");
+                const value = valueElement ? valueElement.innerText : "Click to edit";
+                attributes[key] = value === "Click to edit" ? "" : value;
+            });
+            lanes[laneName].push({ title: taskTitle, attributes });
+        });
+    });
 
     localStorage.setItem("lanes", JSON.stringify(lanes));
 }
 
+
   // Load tasks from localStorage
   function loadTasks() {
-        const storedLanes = JSON.parse(localStorage.getItem("lanes"));
-        if (storedLanes) {
-            const loadLane = (lane, tasks) => {
-                tasks.forEach(taskData => {
-                    const task = createTaskElement(taskData.title);
-                    lane.appendChild(task);
-                });
-            };
+    const storedLanes = JSON.parse(localStorage.getItem("lanes"));
+    if (storedLanes) {
+        const loadLane = (lane, tasks) => {
+            tasks.forEach(taskData => {
+                const task = createTaskElement(taskData.title);
 
-            loadLane(todoLane, storedLanes.todo);
-            loadLane(doneLane, storedLanes.done);
-            loadLane(doingLane, storedLanes.doing);
-            loadLane(archivedLane, storedLanes.archived);
-        }
+                const details = task.querySelector(".task-details");
+                for (const [key, value] of Object.entries(taskData.attributes)) {
+                    const attributeDivs = details.querySelectorAll(".task-attribute");
+                    attributeDivs.forEach(attribute => {
+                        const label = attribute.querySelector("strong").innerText.trim(); // Trim whitespace
+
+                        if (label === key.trim()) { // Ensure both are trimmed and compared
+                            attribute.querySelector("span").innerText = value || "Click to edit";
+                        }
+                    });
+                }
+
+                lane.appendChild(task);
+            });
+        };
+
+        loadLane(todoLane, storedLanes.todo);
+        loadLane(doneLane, storedLanes.done);
+        loadLane(doingLane, storedLanes.doing);
+        loadLane(archivedLane, storedLanes.archived);
     }
+}
 
     // Create a task element
     function createTaskElement(title) {
         const task = document.createElement("div");
         task.classList.add("task");
         task.setAttribute("draggable", "true");
-    
-        // Task Title
+
         const taskTitle = document.createElement("p");
         taskTitle.innerText = title;
-    
-        // Task Details Section
+
+        const taskDetails = createTaskDetails();
+
+        task.appendChild(taskTitle);
+        task.appendChild(taskDetails);
+
+        taskTitle.addEventListener("click", () => {
+            task.classList.toggle("task-expanded");
+        });
+
+        task.addEventListener("dragstart", () => {
+            task.classList.add("is-dragging");
+        });
+
+        task.addEventListener("dragend", () => {
+            task.classList.remove("is-dragging");
+            saveTasks();
+        });
+
+        return task;
+    }
+
+    function createTaskDetails() {
         const taskDetails = document.createElement("div");
         taskDetails.classList.add("task-details");
-    
-        // Add placeholder attributes
+
         const placeholderAttributes = {
             Desc: "Click to edit",
             Ref: "Click to edit"
         };
-    
+
         for (const [key, value] of Object.entries(placeholderAttributes)) {
             const attribute = document.createElement("div");
             attribute.classList.add("task-attribute");
-    
+
             const label = document.createElement("strong");
             label.innerText = `${key}: `;
-    
+
             const text = document.createElement("span");
             text.innerText = value;
             text.style.cursor = "pointer";
-    
-            // Make the text editable on click
+
             text.addEventListener("click", () => {
                 const input = document.createElement("input");
                 input.type = "text";
                 input.value = text.innerText === "Click to edit" ? "" : text.innerText;
-    
+
                 input.addEventListener("blur", () => {
                     text.innerText = input.value || "Click to edit";
                     attribute.replaceChild(text, input);
-                    saveTasks(); // Save changes
+                    saveTasks();
                 });
-    
+
                 input.addEventListener("keydown", (e) => {
                     if (e.key === "Enter") {
-                        input.blur(); // Commit the change on Enter
+                        input.blur();
                     }
                 });
-    
+
                 attribute.replaceChild(input, text);
                 input.focus();
             });
-    
+
             attribute.appendChild(label);
             attribute.appendChild(text);
             taskDetails.appendChild(attribute);
         }
-    
-        // Append title and details
-        task.appendChild(taskTitle);
-        task.appendChild(taskDetails);
-    
-        // Toggle details on click
-        taskTitle.addEventListener("click", () => {
-            task.classList.toggle("task-expanded");
-        });
-    
-        task.addEventListener("dragstart", () => {
-            task.classList.add("is-dragging");
-        });
-    
-        task.addEventListener("dragend", () => {
-            task.classList.remove("is-dragging");
-            saveTasks(); // Save tasks when dragging ends
-        });
-    
-        return task;
+
+        return taskDetails;
     }
-    
+
+    todoLane.addEventListener("click", (event) => {
+        if (event.target.matches(".task-title")) {
+            event.target.parentElement.classList.toggle("task-expanded");
+        }
+    });
+
+    todoLane.addEventListener("dragstart", (event) => {
+        if (event.target.matches(".task")) {
+            event.target.classList.add("is-dragging");
+        }
+    });
+
+    todoLane.addEventListener("dragend", (event) => {
+        if (event.target.matches(".task")) {
+            event.target.classList.remove("is-dragging");
+            saveTasks();
+        }
+    });
 
 });

@@ -42,8 +42,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   
     archiveIcon.addEventListener("click", () => {
-      archivedLane.classList.toggle('visible');
-      archiveIcon.classList.toggle('active');
+      if (archivedLane.style.display === 'none') {
+          archivedLane.style.display = 'flex';
+          archiveIcon.style.fill = '#ffc2d1';
+      } else {
+          archivedLane.style.display = 'none';
+          archiveIcon.style.fill = 'white';
+      }
     });
   
     archiveIcon.addEventListener("mouseenter", () => {

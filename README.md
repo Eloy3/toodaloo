@@ -4,7 +4,7 @@ with added functionalities
 
 https://eloy3.github.io/toodaloo/
 
-# TO DO
+## TO DO
 - [x] Implement task persistence using `localStorage`
 - [x] Add task editing functionality for task name, description, and reference
 - [x] Allow archiving of tasks from the "Done" lane

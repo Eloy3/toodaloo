@@ -184,3 +184,73 @@
     background: rgb(50, 50, 50);
     color: white;
   }
+
+  .task-details {
+    display: none;
+    background: #36495b;
+    color: #ecf0f1;
+    padding: 4px;
+    border-radius: 4px;
+    margin-top: 11px;
+    font-size: 14px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+.task-reference {
+  display: none;
+  background: #36495b;
+  color: #ecf0f1;
+  padding: 8px;
+  border-radius: 4px;
+  margin-top: 11px;
+  font-size: 14px;
+}
+.task-expanded .task-details{
+    display: block;
+}
+
+.task-expanded .task-reference{
+  display: block;
+}
+
+.task-attribute {
+  padding-bottom: 9px;
+  padding-top: 9px;
+  padding-left: 4px;
+  padding-right: 4px;
+  display: flex;
+  align-items: flex-start; /* Align text to the top */
+  flex-wrap: wrap; /* Ensure attributes wrap properly */
+  word-wrap: break-word; /* Handle very long words */
+}
+.task-attribute strong {
+  flex-shrink: 0; /* Ensure the label (e.g., "Des:") does not shrink */
+}
+
+.task-attribute span {
+  margin-left: 8px; /* Space between label and value */
+  flex-grow: 1; /* Allow the value to take up remaining space */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap; /* Preserve line breaks and wrap text */
+  max-width: 100%; /* Ensure it does not exceed container width */
+}
+
+/* Highlight span on hover to indicate editability */
+.task-attribute span:hover {
+  background: #34495e;
+  color: #ecf0f1;
+}
+
+.task-attribute input {
+  margin-left: 8px;
+  padding: 4px;
+  font-size: 14px;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  outline: none;
+  background: #ecf0f1;
+  color: #2c3e50;
+  width: 100%; /* Make the input fill available space */
+  box-sizing: border-box; /* Include padding in the input width */
+}
